@@ -1,0 +1,21 @@
+{
+  "name": "pantheon-quicksilver/pantheon-yml-editor",
+  "description": "A utility package for editing the pantheon.yml file.",
+  "type": "composer-plugin",
+  "require": {
+    "composer-plugin-api": "^1.0 || ^2.0",
+    "symfony/yaml": "^5.3"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "PantheonYmlEditor\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Kyle Taylor",
+      "email": "kyle.taylor@pantheon.io"
+    }
+  ]
+}
