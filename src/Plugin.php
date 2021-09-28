@@ -82,7 +82,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         ];
 
         $yaml = Yaml::dump($yaml_data);
-        file_put_contents('composer-manifest.yaml', $yaml);
+//        file_put_contents('composer-manifest.yaml', $yaml);
     }
 
     /**
