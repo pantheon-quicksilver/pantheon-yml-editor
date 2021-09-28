@@ -12,6 +12,9 @@
       "PantheonYmlEditor\\": "src/"
     }
   },
+  "extra": {
+    "class": "PantheonYmlEditor\\Plugin"
+  },
   "authors": [
     {
       "name": "Kyle Taylor",
