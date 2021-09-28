@@ -4,7 +4,7 @@
   "type": "composer-plugin",
   "require": {
     "composer-plugin-api": "^1.0 || ^2.0",
-    "symfony/yaml": "^5.3"
+    "symfony/yaml": "^3 || ^4 || ^5"
   },
   "license": "MIT",
   "autoload": {
