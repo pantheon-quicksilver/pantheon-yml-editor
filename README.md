@@ -22,12 +22,12 @@ When creating a new Quicksilver plugin, add this package as a dependency, then a
         {
           "wf_type": "clone_database",
           "stage": "after",
-          "priority": 1
+          "weight": 1
         },
         {
           "wf_type": "create_cloud_development_environment",
           "stage": "after",
-          "priority": 100
+          "weight": 100
         }
       ]
     }
