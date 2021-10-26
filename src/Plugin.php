@@ -73,7 +73,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     }
                     // This assumes there is only one $wf_type per package. @todo confirm.
                     $wf_info[$workflow['wf_type']][$package_name] = $workflow;
-                    $wf_info[$workflow['wf_type']][$package_name]['script'] = "web/private/scripts/${script}/${script}.php";
+                    $wf_info[$workflow['wf_type']][$package_name]['script'] =
+                        "web/private/scripts/${script}/${script}.php";
                     $wf_info[$workflow['wf_type']][$package_name]['package_name'] = $package_name;
                 }
             }
@@ -133,7 +134,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             foreach ($may_need_order_fix as $hook_name => $hook) {
                 foreach ($hook as $stage_name) {
                     $pantheon_yml_stage = &$pantheon_yml['workflows'][$hook_name][$stage_name];
-                    usort($pantheon_yml_stage, function($entry_a, $entry_b) use ($wf_info, $hook_name, $stage_name) {
+                    usort($pantheon_yml_stage, function ($entry_a, $entry_b) use ($wf_info, $hook_name, $stage_name) {
                         $weight_a = 0;
                         $weight_b = 0;
                         // Try get the weights from the source and reorder as needed.
@@ -162,9 +163,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Find given workflow from pantheon yml in the workflows array.
      */
-    protected function findWorkflowFromPantheonYml($pantheon_yml_entry, $workflows, $stage = NULL)
+    protected function findWorkflowFromPantheonYml($pantheon_yml_entry, $workflows, $stage = null)
     {
-        $found_workflow = NULL;
+        $found_workflow = null;
         foreach ($workflows as $workflow) {
             if ($stage && $workflow['stage'] !== $stage) {
                 continue;
@@ -203,8 +204,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         // Load the pantheon.yml file
         if (file_exists($pantheon_yml)) {
             $pantheon_yml_contents = file_get_contents($pantheon_yml);
-        }
-        else {
+        } else {
             $example_pantheon_yml = __DIR__ . "/../templates/example.pantheon.yml";
             $pantheon_yml_contents = file_get_contents($example_pantheon_yml);
         }
@@ -248,8 +248,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 $data[$key] = $this->fixFloats($value);
-            }
-            elseif (is_float($value)) {
+            } elseif (is_float($value)) {
                 $data[$key] = (string)$value;
                 // Integer values would not be a float if it did not have
                 // a ".0" in the source data, so put that back.
@@ -262,7 +261,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Validate that workflow structure complies with pantheon-yml-editor. 
+     * Validate that workflow structure complies with pantheon-yml-editor.
      */
     protected function isValidWorkflow(array $workflow)
     {
