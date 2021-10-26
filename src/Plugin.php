@@ -94,7 +94,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 if ($weight_a === $weight_b) {
                     return 0;
                 }
-                return ($weight_a > $weight_b) ? 1 : -1;
+                return ($weight_a > $weight_b) ? -1 : 1;
             });
         }
 
