@@ -283,6 +283,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * {@inheritdoc}
      */
     public function activate(Composer $composer, IOInterface $io) {
+        echo "pantheon-yml-editor:activate\n";
         // Development: this makes symfony var-dumper work.
         // See https://github.com/composer/composer/issues/7911
         // include './vendor/symfony/var-dumper/Resources/functions/dump.php';
