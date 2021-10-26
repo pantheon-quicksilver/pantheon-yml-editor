@@ -76,14 +76,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     // This assumes there is only one $wf_type per package. @todo confirm.
                     $wf_info[$workflow['wf_type']][$package_name] = $workflow;
                     $wf_info[$workflow['wf_type']][$package_name]['script'] = "web/private/scripts/${script}/${script}.php";
+                    $wf_info[$workflow['wf_type']][$package_name]['package_name'] = $package_name;
                 }
             }
         }
 
         // Sort each wf_type.
-        // @todo validate sorting works as expected.
         foreach ($wf_info as &$wf_type) {
-            uksort($wf_type, function ($wf_a, $wf_b) {
+            usort($wf_type, function ($wf_a, $wf_b) {
                 $weight_a = !empty($wf_a['weight']) ? $wf_a['weight'] : 0;
                 $weight_b = !empty($wf_b['weight']) ? $wf_b['weight'] : 0;
                 if ($weight_a === $weight_b) {
@@ -96,8 +96,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $pantheon_yml = $this->getPantheonYmlContents();
 
         foreach ($wf_info as $hook_name => $hook_contents) {
-            foreach ($hook_contents as $package_name => $hook) {
-                $hook_descriptions = $this->getHookDescriptions($hook, $package_name);
+            foreach ($hook_contents as $hook) {
+                $hook_descriptions = $this->getHookDescriptions($hook);
                 $found = false;
                 if (isset($pantheon_yml['workflows'][$hook_name])) {
                     foreach ($pantheon_yml['workflows'][$hook_name] as &$stage) {
@@ -129,8 +129,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Get hook possible descriptions.
      */
-    protected function getHookDescriptions($hook, $package_name)
+    protected function getHookDescriptions($hook)
     {
+        $package_name = $hook['package_name'];
         $wf_type = $hook['wf_type'];
         $base_description = "[${package_name}] ${wf_type}";
         return [
