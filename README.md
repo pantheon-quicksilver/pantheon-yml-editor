@@ -9,6 +9,7 @@ When creating a new Quicksilver plugin, add this package as a dependency, then a
 |:-|:-|:-|
 |`wf_type` (required)|String|The [workflow](https://pantheon.io/docs/quicksilver#hooks) that is being hooked into.|
 |`stage` (required)|String|The stage of the workflow being defined (`before` or `after`).|
+|`script`|String|The script to execute. If not provided, it will default to a php file with the same name as the key under pantheon-quicksilver|
 |`weight`|Int|Should this workflow be added to the top of the workflow when installed.|
 
 
@@ -22,6 +23,7 @@ When creating a new Quicksilver plugin, add this package as a dependency, then a
         {
           "wf_type": "clone_database",
           "stage": "after",
+          "script": "sanitize-db.php",
           "weight": 1
         },
         {
