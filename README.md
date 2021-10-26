@@ -34,3 +34,19 @@ When creating a new Quicksilver plugin, add this package as a dependency, then a
   }
 }
 ```
+
+This will add the corresponding workflow to pantheon.yml like this:
+
+```
+workflows:
+  clone_database:
+    after:
+      -
+        type: webphp
+        script: web/private/scripts/wakeup/wakeup.php
+        description: '[pantheon-quicksilver/wakeup] clone_database (default)'
+```
+
+If you want to make any change to the workflow and avoid composer to reverting your changes, change "default" (in parenthesis) to "edited" (the rest of the description should remain the same).
+
+**Note**: Removing a workflow added with this plugin will result in the next composer run re-adding it. This will be fixed in a future version.
