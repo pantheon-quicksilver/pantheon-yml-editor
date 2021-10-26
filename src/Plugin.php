@@ -29,8 +29,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Returns an array of event names this subscriber wants to listen to.
      */
-    public static function getSubscribedEvents(): array
-    {
+    public static function getSubscribedEvents(): array {
+        echo "pantheon-yml-editor:getSubscribedEvents\n";
         return [
             ScriptEvents::POST_INSTALL_CMD => ['updatePantheonYml'],
             ScriptEvents::POST_UPDATE_CMD => ['updatePantheonYml'],
@@ -44,8 +44,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      *
      * @param Event $event
      */
-    public function updatePantheonYml(Event $event)
-    {
+    public function updatePantheonYml(Event $event) {
+        echo "pantheon-yml-editor:updatePantheonYml\n";
         $repositoryManager = $this->composer->getRepositoryManager();
         $localRepository = $repositoryManager->getLocalRepository();
         $packages = $localRepository->getPackages();
@@ -188,8 +188,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Get hook possible descriptions.
      */
-    protected function getHookDescriptions($hook)
-    {
+    protected function getHookDescriptions($hook) {
+        echo "pantheon-yml-editor:getHookDescriptions\n";
         $package_name = $hook['package_name'];
         $wf_type = $hook['wf_type'];
         $base_description = "[${package_name}] ${wf_type}";
@@ -203,8 +203,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Get pantheon yml contents.
      */
-    protected function getPantheonYmlContents()
-    {
+    protected function getPantheonYmlContents() {
+        echo "pantheon-yml-editor:getPantheonYmlContents\n";
         $pantheon_yml = './pantheon.yml';
 
         // Load the pantheon.yml file
@@ -224,8 +224,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Write a modified pantheon.yml file back to disk.
      */
-    public function writePantheonYml($pantheon_yml)
-    {
+    public function writePantheonYml($pantheon_yml) {
+        echo "pantheon-yml-editor:writePantheonYml\n";
         // Convert floats in the data to strings so that we can preserve the ".0"
         $pantheon_yml = $this->fixFloats($pantheon_yml);
 
@@ -249,8 +249,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Fix floats to print them as strings.
      */
-    protected function fixFloats($data)
-    {
+    protected function fixFloats($data) {
+        echo "pantheon-yml-editor:fixFloats\n";
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 $data[$key] = $this->fixFloats($value);
@@ -269,8 +269,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Validate that workflow structure complies with pantheon-yml-editor.
      */
-    protected function isValidWorkflow(array $workflow)
-    {
+    protected function isValidWorkflow(array $workflow) {
+        echo "pantheon-yml-editor:isValidWorkflow\n";
         // Weight is being treated as optional.
         if (!isset($workflow['wf_type']) || !isset($workflow['stage'])) {
             return false;
@@ -282,24 +282,28 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function activate(Composer $composer, IOInterface $io)
-    {
+    public function activate(Composer $composer, IOInterface $io) {
+        // Development: this makes symfony var-dumper work.
+        // See https://github.com/composer/composer/issues/7911
+        // include './vendor/symfony/var-dumper/Resources/functions/dump.php';
+
         $this->composer = $composer;
+        // $this->extra = $this->composer->getPackage()->getExtra();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function deactivate(Composer $composer, IOInterface $io)
-    {
+    public function deactivate(Composer $composer, IOInterface $io) {
+        echo "pantheon-yml-editor:deactivate\n";
         // Do nothing.
     }
 
     /**
      * {@inheritdoc}
      */
-    public function uninstall(Composer $composer, IOInterface $io)
-    {
+    public function uninstall(Composer $composer, IOInterface $io) {
+        echo "pantheon-yml-editor:uninstall\n";
         // Do nothing.
     }
 }
