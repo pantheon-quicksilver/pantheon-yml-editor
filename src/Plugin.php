@@ -93,15 +93,20 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
         $pantheon_yml = $this->getPantheonYmlContents();
 
+        // Which hooks and stages may need ordering fix.
+        $may_need_order_fix = [];
         foreach ($wf_info as $hook_name => $hook_contents) {
             foreach ($hook_contents as $hook) {
                 $hook_descriptions = $this->getHookDescriptions($hook);
                 $found = false;
                 if (isset($pantheon_yml['workflows'][$hook_name])) {
-                    foreach ($pantheon_yml['workflows'][$hook_name] as &$stage) {
+                    foreach ($pantheon_yml['workflows'][$hook_name] as $stage_name => &$stage) {
                         foreach ($stage as &$item) {
                             if ($item['description'] === $hook_descriptions[0]) {
-                                // @todo Fix ordering.
+                                if (!isset($may_need_order_fix[$hook_name])) {
+                                    $may_need_order_fix[$hook_name] = [];
+                                }
+                                $may_need_order_fix[$hook_name][$stage_name] = $stage_name;
                                 $found = true;
                                 $item['script'] = $hook['script'];
                             } elseif ($item['description'] === $hook_descriptions[1]) {
@@ -112,6 +117,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     }
                 }
                 if (!$found) {
+                    if (!isset($may_need_order_fix[$hook_name])) {
+                        $may_need_order_fix[$hook_name] = [];
+                    }
+                    $may_need_order_fix[$hook_name][$hook['stage']] = $hook['stage'];
                     $pantheon_yml['workflows'][$hook_name][$hook['stage']][] = [
                         'type' => 'webphp',
                         'script' => $hook['script'],
@@ -120,8 +129,53 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 }
             }
         }
+        if ($may_need_order_fix) {
+            foreach ($may_need_order_fix as $hook_name => $hook) {
+                foreach ($hook as $stage_name) {
+                    $pantheon_yml_stage = &$pantheon_yml['workflows'][$hook_name][$stage_name];
+                    usort($pantheon_yml_stage, function($entry_a, $entry_b) use ($wf_info, $hook_name, $stage_name) {
+                        $weight_a = 0;
+                        $weight_b = 0;
+                        // Try get the weights from the source and reorder as needed.
+                        if ($wf_a = $this->findWorkflowFromPantheonYml($entry_a, $wf_info[$hook_name], $stage_name)) {
+                            if (!empty($wf_a['weight'])) {
+                                $weight_a = $wf_a['weight'];
+                            }
+                        }
+                        if ($wf_b = $this->findWorkflowFromPantheonYml($entry_b, $wf_info[$hook_name], $stage_name)) {
+                            if (!empty($wf_b['weight'])) {
+                                $weight_b = $wf_b['weight'];
+                            }
+                        }
+                        if ($weight_a === $weight_b) {
+                            return 0;
+                        }
+                        return ($weight_a > $weight_b) ? 1 : -1;
+                    });
+                }
+            }
+        }
 
         $this->writePantheonYml($pantheon_yml);
+    }
+
+    /**
+     * Find given workflow from pantheon yml in the workflows array.
+     */
+    protected function findWorkflowFromPantheonYml($pantheon_yml_entry, $workflows, $stage = NULL)
+    {
+        $found_workflow = NULL;
+        foreach ($workflows as $workflow) {
+            if ($stage && $workflow['stage'] !== $stage) {
+                continue;
+            }
+            $descriptions = $this->getHookDescriptions($workflow);
+            if (in_array($pantheon_yml_entry['description'], $descriptions)) {
+                $found_workflow = $workflow;
+                break;
+            }
+        }
+        return $found_workflow;
     }
 
     /**
