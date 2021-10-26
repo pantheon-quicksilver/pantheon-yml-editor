@@ -87,11 +87,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
 
         // Sort each wf_type.
-<<<<<<< HEAD
-=======
-        // @todo validate sorting works as expected.
-        echo "greater is less\n";
->>>>>>> 391f588 (greater is less)
+        echo "greater is greater\n";
         foreach ($wf_info as &$wf_type) {
             usort($wf_type, function ($wf_a, $wf_b) {
                 $weight_a = !empty($wf_a['weight']) ? $wf_a['weight'] : 0;
@@ -99,7 +95,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 if ($weight_a === $weight_b) {
                     return 0;
                 }
-                return ($weight_a > $weight_b) ? -1 : 1; // greater is greater
+                return ($weight_a > $weight_b) ? 1 : -1; // greater is greater
             });
         }
 
