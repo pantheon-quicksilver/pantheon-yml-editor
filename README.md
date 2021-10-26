@@ -43,8 +43,8 @@ workflows:
     after:
       -
         type: webphp
-        script: web/private/scripts/wakeup/wakeup.php
-        description: '[pantheon-quicksilver/wakeup] clone_database (default)'
+        script: web/private/scripts/sanitize-db/sanitize-db.php
+        description: '[pantheon-quicksilver/sanitize-db] clone_database (default)'
 ```
 
 If you want to make any change to the workflow and avoid composer to reverting your changes, change "default" (in parenthesis) to "edited" (the rest of the description should remain the same).
