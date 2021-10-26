@@ -64,10 +64,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $workflows = reset($extra['pantheon-quicksilver']);
                 foreach ($workflows as $workflow) {
                     if (!$this->isValidWorkflow($workflow)) {
-                        // @todo Does this work?
-                        $event->getIO()->warning('Invalid workflow info for package !package', [
-                            '!package' => $package_name,
-                        ]);
+                        $event->getIO()->warning("Skipping invalid workflow info for package ${package_name}");
+                        continue;
                     }
                     if (!isset($wf_info[$workflow['wf_type']])) {
                         // Create index if it does not exist.
