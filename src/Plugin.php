@@ -34,6 +34,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         return [
             ScriptEvents::POST_INSTALL_CMD => ['updatePantheonYml'],
             ScriptEvents::POST_UPDATE_CMD => ['updatePantheonYml'],
+            // @todo How to make uninstall work?
             PackageEvents::POST_PACKAGE_UNINSTALL => ['updatePantheonYml', 10],
         ];
     }
