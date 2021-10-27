@@ -246,12 +246,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected function getHookDescriptions($hook)
     {
-        // @todo Get description from package description (and consider description changes and maybe use regex to match?)
         $package_name = $hook['package_name'];
         $wf_type = $hook['wf_type'];
         $base_description = "[${package_name}] ${wf_type}";
         return [
-            // @todo Document this to allow people to hand-edit pantheon yml.
             $base_description . ' (default)',
             $base_description . ' (edited)',
         ];
