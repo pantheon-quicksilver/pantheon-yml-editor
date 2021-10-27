@@ -43,8 +43,9 @@ jobs:
         run: composer cs
         working-directory: drupal-project/pantheon-yml-editor
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      #- name: Setup tmate session
+      #  uses: mxschmitt/action-tmate@v3
 
       - name: Run tests
         run: ./tests/run.sh
+        working-directory: drupal-project/pantheon-yml-editor
