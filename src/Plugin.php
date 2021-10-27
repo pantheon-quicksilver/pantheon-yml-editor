@@ -62,7 +62,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $wf_info[$workflow['wf_type']][$package_name] = $workflow;
 
                 // Handle optional script key.
-                $wf_info[$workflow['wf_type']][$package_name]['script'] = $this->util->getScriptPath($workflow, $script);
+                $wf_info[$workflow['wf_type']][$package_name]['script'] =
+                    $this->util->getScriptPath($workflow, $script);
                 $wf_info[$workflow['wf_type']][$package_name]['package_name'] = $package_name;
             }
 
@@ -121,7 +122,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     $wf_info[$workflow['wf_type']][$package_name] = $workflow;
 
                     // Handle optional script key.
-                    $wf_info[$workflow['wf_type']][$package_name]['script'] = $this->util->getScriptPath($workflow, $script);
+                    $wf_info[$workflow['wf_type']][$package_name]['script'] =
+                        $this->util->getScriptPath($workflow, $script);
                     $wf_info[$workflow['wf_type']][$package_name]['package_name'] = $package_name;
                 }
             }
@@ -185,12 +187,20 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                         $weight_a = 0;
                         $weight_b = 0;
                         // Try get the weights from the source and reorder as needed.
-                        if ($wf_a = $this->util->findWorkflowFromPantheonYml($entry_a, $wf_info[$hook_name], $stage_name)) {
+                        if ($wf_a = $this->util->findWorkflowFromPantheonYml(
+                            $entry_a,
+                            $wf_info[$hook_name],
+                            $stage_name
+                        )) {
                             if (!empty($wf_a['weight'])) {
                                 $weight_a = $wf_a['weight'];
                             }
                         }
-                        if ($wf_b = $this->util->findWorkflowFromPantheonYml($entry_b, $wf_info[$hook_name], $stage_name)) {
+                        if ($wf_b = $this->util->findWorkflowFromPantheonYml(
+                            $entry_b,
+                            $wf_info[$hook_name],
+                            $stage_name
+                        )) {
                             if (!empty($wf_b['weight'])) {
                                 $weight_b = $wf_b['weight'];
                             }

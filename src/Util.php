@@ -142,5 +142,4 @@ class Util
 
         return file_put_contents($pantheon_yml_path, $pantheon_yml_text);
     }
-
 }
