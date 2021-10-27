@@ -71,9 +71,16 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                         // Create index if it does not exist.
                         $wf_info[$workflow['wf_type']] = [];
                     }
-                    // This assumes there is only one $wf_type per package. @todo confirm.
                     $wf_info[$workflow['wf_type']][$package_name] = $workflow;
-                    $wf_info[$workflow['wf_type']][$package_name]['script'] = "web/private/scripts/${script}/${script}.php";
+
+                    // Handle optional script key.
+                    $script_path = "web/private/scripts/${script}/";
+                    if (!empty($workflow['script'])) {
+                        $script_path .= $workflow['script'];
+                    } else {
+                        $script_path .= "${script}.php";
+                    }
+                    $wf_info[$workflow['wf_type']][$package_name]['script'] = $script_path;
                     $wf_info[$workflow['wf_type']][$package_name]['package_name'] = $package_name;
                 }
             }
