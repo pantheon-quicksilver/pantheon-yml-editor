@@ -232,7 +232,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $pantheon_yml_path = './pantheon.yml';
         $pantheon_yml = Yaml::dump($pantheon_yml, PHP_INT_MAX, 2);
         $pantheon_yml_lines = $this->comments->inject(explode("\n", $pantheon_yml));
-        $pantheon_yml_text = implode("\n", $pantheon_yml_lines);
+        $pantheon_yml_text = implode("\n", $pantheon_yml_lines) . "\n";
 
         // Horrible workaround. We cannot get our yaml parser to output a
         // string such as '7.0' without wrapping it in quotes. If the data
