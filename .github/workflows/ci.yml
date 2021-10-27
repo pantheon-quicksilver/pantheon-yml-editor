@@ -19,12 +19,14 @@ jobs:
     steps:
       - name: Checkout drupal-project to run tests
         uses: actions/checkout@v2
-        repository: pantheon-upstreams/drupal-project
-        path: drupal-project
+        with:
+          repository: pantheon-upstreams/drupal-project
+          path: drupal-project
 
       - name: Checkout current repo
         uses: actions/checkout@v2
-        path: drupal-project/pantheon-yml-editor
+        with:
+          path: drupal-project/pantheon-yml-editor
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
