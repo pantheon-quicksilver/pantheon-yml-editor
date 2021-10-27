@@ -74,7 +74,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     $wf_info[$workflow['wf_type']][$package_name] = $workflow;
 
                     // Handle optional script key.
-                    $script_path = "web/private/scripts/${script}/";
+                    $script_path = "web/private/scripts/quicksilver/${script}/";
                     if (!empty($workflow['script'])) {
                         $script_path .= $workflow['script'];
                     } else {
