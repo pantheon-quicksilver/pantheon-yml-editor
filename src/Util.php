@@ -80,7 +80,8 @@ class Util
     /**
      * Build workflows array from composer packages.
      */
-    public function buildWorkflowsInfoArray($packages, $event) {
+    public function buildWorkflowsInfoArray($packages, $event)
+    {
         $wf_info = [];
         foreach ($packages as $package) {
             if (!in_array($package->getType(), ['quicksilver-script', 'quicksilver-module'])) {
