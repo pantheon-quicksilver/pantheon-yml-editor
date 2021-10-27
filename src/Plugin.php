@@ -80,7 +80,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $localRepository = $repositoryManager->getLocalRepository();
         $packages = $localRepository->getPackages();
         // Quicksilver workflows as per https://pantheon.io/docs/quicksilver#hooks.
-        $wf_info = $this->util->buildWorkflowsInfoArray($packages, $event);
+        $wf_info = $this->util->buildWorkflowsInfoArray($packages, $event, $this->composer);
 
         // Sort each wf_type.
         foreach ($wf_info as &$wf_type) {
