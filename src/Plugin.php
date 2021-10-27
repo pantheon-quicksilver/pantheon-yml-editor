@@ -47,26 +47,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if (!in_array($package->getType(), ['quicksilver-script', 'quicksilver-module'])) {
             return;
         }
-        $package_name = $package->getName();
-        $extra = $package->getExtra();
-        if (!empty($extra['pantheon-quicksilver'])) {
-            $keys = array_keys($extra['pantheon-quicksilver']);
-            $script = reset($keys);
-            $workflows = reset($extra['pantheon-quicksilver']);
-            $wf_info = [];
-            foreach ($workflows as $workflow) {
-                if (!isset($wf_info[$workflow['wf_type']])) {
-                    // Create index if it does not exist.
-                    $wf_info[$workflow['wf_type']] = [];
-                }
-                $wf_info[$workflow['wf_type']][$package_name] = $workflow;
-
-                // Handle optional script key.
-                $wf_info[$workflow['wf_type']][$package_name]['script'] =
-                    $this->util->getScriptPath($workflow, $script);
-                $wf_info[$workflow['wf_type']][$package_name]['package_name'] = $package_name;
-            }
-
+        $wf_info = $this->util->buildWorkflowsInfoArray([$package], $event);
+        if ($wf_info) {
             $pantheon_yml = $this->util->getPantheonYmlContents();
 
             foreach ($wf_info as $hook_name => $hook_contents) {
@@ -98,36 +80,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $localRepository = $repositoryManager->getLocalRepository();
         $packages = $localRepository->getPackages();
         // Quicksilver workflows as per https://pantheon.io/docs/quicksilver#hooks.
-        $wf_info = [];
-
-        foreach ($packages as $package) {
-            if (!in_array($package->getType(), ['quicksilver-script', 'quicksilver-module'])) {
-                continue;
-            }
-            $package_name = $package->getName();
-            $extra = $package->getExtra();
-            if (!empty($extra['pantheon-quicksilver'])) {
-                $keys = array_keys($extra['pantheon-quicksilver']);
-                $script = reset($keys);
-                $workflows = reset($extra['pantheon-quicksilver']);
-                foreach ($workflows as $workflow) {
-                    if (!$this->util->isValidWorkflow($workflow)) {
-                        $event->getIO()->warning("Skipping invalid workflow info for package ${package_name}");
-                        continue;
-                    }
-                    if (!isset($wf_info[$workflow['wf_type']])) {
-                        // Create index if it does not exist.
-                        $wf_info[$workflow['wf_type']] = [];
-                    }
-                    $wf_info[$workflow['wf_type']][$package_name] = $workflow;
-
-                    // Handle optional script key.
-                    $wf_info[$workflow['wf_type']][$package_name]['script'] =
-                        $this->util->getScriptPath($workflow, $script);
-                    $wf_info[$workflow['wf_type']][$package_name]['package_name'] = $package_name;
-                }
-            }
-        }
+        $wf_info = $this->util->buildWorkflowsInfoArray($packages, $event);
 
         // Sort each wf_type.
         foreach ($wf_info as &$wf_type) {

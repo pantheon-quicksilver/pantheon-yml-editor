@@ -78,6 +78,42 @@ class Util
     }
 
     /**
+     * Build workflows array from composer packages.
+     */
+    public function buildWorkflowsInfoArray($packages, $event) {
+        $wf_info = [];
+        foreach ($packages as $package) {
+            if (!in_array($package->getType(), ['quicksilver-script', 'quicksilver-module'])) {
+                continue;
+            }
+            $package_name = $package->getName();
+            $extra = $package->getExtra();
+            if (!empty($extra['pantheon-quicksilver'])) {
+                $keys = array_keys($extra['pantheon-quicksilver']);
+                $script = reset($keys);
+                $workflows = reset($extra['pantheon-quicksilver']);
+                foreach ($workflows as $workflow) {
+                    if (!$this->isValidWorkflow($workflow)) {
+                        $event->getIO()->warning("Skipping invalid workflow info for package ${package_name}");
+                        continue;
+                    }
+                    if (!isset($wf_info[$workflow['wf_type']])) {
+                        // Create index if it does not exist.
+                        $wf_info[$workflow['wf_type']] = [];
+                    }
+                    $wf_info[$workflow['wf_type']][$package_name] = $workflow;
+
+                    // Handle optional script key.
+                    $wf_info[$workflow['wf_type']][$package_name]['script'] =
+                        $this->getScriptPath($workflow, $script);
+                    $wf_info[$workflow['wf_type']][$package_name]['package_name'] = $package_name;
+                }
+            }
+        }
+        return $wf_info;
+    }
+
+    /**
      * Fix floats to print them as strings.
      */
     protected function fixFloats($data)
