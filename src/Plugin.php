@@ -34,7 +34,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         return [
             ScriptEvents::POST_INSTALL_CMD => ['updatePantheonYml'],
             ScriptEvents::POST_UPDATE_CMD => ['updatePantheonYml'],
-            // @todo How to make uninstall work?
             PackageEvents::POST_PACKAGE_UNINSTALL => ['removeWorkflows', 10],
         ];
     }
@@ -56,7 +55,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $workflows = reset($extra['pantheon-quicksilver']);
             $wf_info = [];
             foreach ($workflows as $workflow) {
-                // @todo: DRY start!
                 if (!isset($wf_info[$workflow['wf_type']])) {
                     // Create index if it does not exist.
                     $wf_info[$workflow['wf_type']] = [];
@@ -64,16 +62,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $wf_info[$workflow['wf_type']][$package_name] = $workflow;
 
                 // Handle optional script key.
-                // @todo Get the base path from site extra.installer-paths
-                $script_path = "web/private/scripts/quicksilver/${script}/";
-                if (!empty($workflow['script'])) {
-                    $script_path .= $workflow['script'];
-                } else {
-                    $script_path .= "${script}.php";
-                }
-                $wf_info[$workflow['wf_type']][$package_name]['script'] = $script_path;
+                $wf_info[$workflow['wf_type']][$package_name]['script'] = $this->getScriptPath($workflow, $script);
                 $wf_info[$workflow['wf_type']][$package_name]['package_name'] = $package_name;
-                // @todo DRY end!
             }
 
             $pantheon_yml = $this->getPantheonYmlContents();
@@ -131,14 +121,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     $wf_info[$workflow['wf_type']][$package_name] = $workflow;
 
                     // Handle optional script key.
-                    // @todo Get the base path from site extra.installer-paths
-                    $script_path = "web/private/scripts/quicksilver/${script}/";
-                    if (!empty($workflow['script'])) {
-                        $script_path .= $workflow['script'];
-                    } else {
-                        $script_path .= "${script}.php";
-                    }
-                    $wf_info[$workflow['wf_type']][$package_name]['script'] = $script_path;
+                    $wf_info[$workflow['wf_type']][$package_name]['script'] = $this->getScriptPath($workflow, $script);
                     $wf_info[$workflow['wf_type']][$package_name]['package_name'] = $package_name;
                 }
             }
@@ -222,6 +205,21 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
 
         $this->writePantheonYml($pantheon_yml);
+    }
+
+    /**
+     * Get script path from workflow information.
+     */
+    protected function getScriptPath($workflow, $script_name)
+    {
+        // @todo Get the base path from site extra.installer-paths
+        $script_path = "web/private/scripts/quicksilver/${script_name}/";
+        if (!empty($workflow['script'])) {
+            $script_path .= $workflow['script'];
+        } else {
+            $script_path .= "${script_name}.php";
+        }
+        return $script_path;
     }
 
     /**
