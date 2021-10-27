@@ -47,7 +47,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if (!in_array($package->getType(), ['quicksilver-script', 'quicksilver-module'])) {
             return;
         }
-        $wf_info = $this->util->buildWorkflowsInfoArray([$package], $event);
+        $wf_info = $this->util->buildWorkflowsInfoArray([$package], $event, $this->composer);
         if ($wf_info) {
             $pantheon_yml = $this->util->getPantheonYmlContents();
 
