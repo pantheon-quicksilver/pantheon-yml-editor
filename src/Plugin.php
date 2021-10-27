@@ -44,7 +44,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function removeWorkflows(Event $event)
     {
         $package = $event->getOperation()->getPackage();
-        if ($package->getType() !== 'quicksilver-script') {
+        if (!in_array($package->getType(), ['quicksilver-script', 'quicksilver-module'])) {
             return;
         }
         $package_name = $package->getName();
@@ -100,7 +100,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $wf_info = [];
 
         foreach ($packages as $package) {
-            if ($package->getType() !== 'quicksilver-script') {
+            if (!in_array($package->getType(), ['quicksilver-script', 'quicksilver-module'])) {
                 continue;
             }
             $package_name = $package->getName();
