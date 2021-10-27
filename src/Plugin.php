@@ -213,7 +213,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     protected function getScriptPath($workflow, $script_name)
     {
         // @todo Get the base path from site extra.installer-paths
-        $script_path = "web/private/scripts/quicksilver/${script_name}/";
+        $script_path = "private/scripts/quicksilver/${script_name}/";
         if (!empty($workflow['script'])) {
             $script_path .= $workflow['script'];
         } else {
