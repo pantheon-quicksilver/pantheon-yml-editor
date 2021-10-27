@@ -7,6 +7,9 @@
     "symfony/yaml": "^3 || ^4 || ^5",
     "consolidation/comments": "^1.0"
   },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.6"
+  },
   "license": "MIT",
   "autoload": {
     "psr-4": {
@@ -15,6 +18,9 @@
   },
   "extra": {
     "class": "PantheonYmlEditor\\Plugin"
+  },
+  "scripts": {
+    "cs": "phpcs --standard=PSR2 src"
   },
   "authors": [
     {
