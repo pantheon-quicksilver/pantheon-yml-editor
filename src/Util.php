@@ -20,8 +20,15 @@ class Util
 
     /**
      * Get script path from workflow information.
+     *
+     * @param $workflow
+     * @param $script_name
+     * @param $package
+     * @param $composer
+     * @param $io
+     * @return string
      */
-    public function getScriptPath($workflow, $script_name, $package, $composer, $io)
+    public function getScriptPath($workflow, $script_name, $package, $composer, $io): string
     {
         $package_name = $package->getName();
         $installer = new PantheonInstaller($package, $composer, $io);
@@ -40,7 +47,7 @@ class Util
     /**
      * Get hook possible descriptions.
      */
-    public function getHookDescriptions($hook)
+    public function getHookDescriptions($hook): array
     {
         $package_name = $hook['package_name'];
         $wf_type = $hook['wf_type'];
@@ -72,36 +79,68 @@ class Util
 
     /**
      * Validate that workflow structure complies with pantheon-yml-editor.
+     *
+     * @param array $workflow
+     * @param $event
+     * @return bool
      */
-    public function isValidWorkflow(array $workflow)
+    public function isValidWorkflow(array $workflow, $event): bool
     {
         // Weight is being treated as optional.
-        if (!isset($workflow['wf_type']) || !isset($workflow['stage'])) {
+        if (empty($workflow['wf_type']) || empty($workflow['stage'])) {
             return false;
         }
-        // @todo More validations could be added (e.g. stage vs wf_type).
-        return true;
+
+        // Get workflow validation schema.
+        $workflows_file = __DIR__ . "/../templates/workflows.json";
+        $workflows = json_decode(file_get_contents($workflows_file), true);
+
+        // Test each workflow against the schema.
+        foreach ($workflows as $wf) {
+            $wf_type = array_keys($wf)[0];
+            $wf_data = array_values($wf)[0];
+
+            // Validate the options provided match the latest pantheon yml schema.
+            // See reference to pantheon_yml_v1_schema in ygg.
+            if ($wf_type == $workflow['wf_type'] && in_array($workflow['stage'], $wf_data['states'])) {
+                return true;
+            }
+        }
+
+        // If no workflows match, then workflow is invalid.
+        $event->getIO()->error("Workflow declaration is invalid.");
+        return false;
     }
 
     /**
      * Build workflows array from composer packages.
+     *
+     * @param $packages
+     * @param $event
+     * @param $composer
+     * @return array
      */
-    public function buildWorkflowsInfoArray($packages, $event, $composer)
+    public function buildWorkflowsInfoArray($packages, $event, $composer): array
     {
         $wf_info = [];
         foreach ($packages as $package) {
             if (!in_array($package->getType(), ['quicksilver-script', 'quicksilver-module'])) {
                 continue;
             }
+
             $package_name = $package->getName();
             $extra = $package->getExtra();
+
+            // Check if Pantheon Quicksilver extras exist.
             if (!empty($extra['pantheon-quicksilver'])) {
                 $keys = array_keys($extra['pantheon-quicksilver']);
                 $script = reset($keys);
                 $workflows = reset($extra['pantheon-quicksilver']);
+
+                // Process each workflow defined in extras.
                 foreach ($workflows as $workflow) {
-                    if (!$this->isValidWorkflow($workflow)) {
-                        $event->getIO()->warning("Skipping invalid workflow info for package ${package_name}");
+                    if (!$this->isValidWorkflow($workflow, $event)) {
+                        $event->getIO()->warning("Skipping: Invalid workflow info for package $package_name");
                         continue;
                     }
                     if (!isset($wf_info[$workflow['wf_type']])) {
@@ -117,11 +156,15 @@ class Util
                 }
             }
         }
+
         return $wf_info;
     }
 
     /**
      * Fix floats to print them as strings.
+     *
+     * @param $data
+     * @return mixed
      */
     protected function fixFloats($data)
     {
@@ -142,6 +185,8 @@ class Util
 
     /**
      * Get pantheon yml contents.
+     *
+     * @return mixed
      */
     public function getPantheonYmlContents()
     {
@@ -163,6 +208,9 @@ class Util
 
     /**
      * Write a modified pantheon.yml file back to disk.
+     *
+     * @param $pantheon_yml
+     * @return false|int
      */
     public function writePantheonYml($pantheon_yml)
     {
