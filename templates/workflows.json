@@ -1,0 +1,51 @@
+[
+  {
+    "deploy": {
+      "title": "Deploy workflow",
+      "description": "Code or data deploys targeting an environment",
+      "states": ["before", "after"]
+    }
+  },
+  {
+    "clear_cache": {
+      "title": "Clear Cache workflow",
+      "description": "Clearing the cache for an environment",
+      "states": ["before", "after"]
+    }
+  },
+  {
+    "sync_code": {
+      "title": "Sync Code workflow",
+      "description": "Pushing code to an environment",
+      "states": ["before", "after"]
+    }
+  },
+  {
+    "clone_database": {
+      "title": "Clone database workflow",
+      "description": "Clone database from an environment",
+      "states": ["before", "after"]
+    }
+  },
+  {
+    "create_cloud_development_environment": {
+      "title": "Create multidev environment",
+      "description": "Create a new multidev environment",
+      "states": ["after"]
+    }
+  },
+  {
+    "deploy_product": {
+      "title": "Deploy product",
+      "description": "Deploy a product as part of the site spinup",
+      "states": ["after"]
+    }
+  },
+  {
+    "autopilot_vrt": {
+      "title": "Autopilot visual regression test",
+      "description": "Visual regression workflow as part of an Autopilot site update check",
+      "states": ["after"]
+    }
+  }
+]
