@@ -4,6 +4,8 @@ namespace PantheonYmlEditor;
 
 use Symfony\Component\Yaml\Yaml;
 use Consolidation\Comments\Comments;
+use Composer\InstalledVersions;
+use Composer\Installers\PantheonInstaller;
 
 /**
  * Utilities functions for Pantheon YML Editor plugin.
@@ -19,10 +21,14 @@ class Util
     /**
      * Get script path from workflow information.
      */
-    public function getScriptPath($workflow, $script_name)
+    public function getScriptPath($workflow, $script_name, $package, $composer, $io)
     {
-        // @todo Get the base path from site extra.installer-paths
-        $script_path = "private/scripts/quicksilver/${script_name}/";
+        $package_name = $package->getName();
+        $installer = new PantheonInstaller($package, $composer, $io);
+        $script_path = $installer->getInstallPath($package, 'pantheon-quicksilver');
+        if (strpos($script_path, 'web/') === 0) {
+            $script_path = substr($script_path, 4);
+        }
         if (!empty($workflow['script'])) {
             $script_path .= $workflow['script'];
         } else {
@@ -80,7 +86,7 @@ class Util
     /**
      * Build workflows array from composer packages.
      */
-    public function buildWorkflowsInfoArray($packages, $event)
+    public function buildWorkflowsInfoArray($packages, $event, $composer)
     {
         $wf_info = [];
         foreach ($packages as $package) {
@@ -106,7 +112,7 @@ class Util
 
                     // Handle optional script key.
                     $wf_info[$workflow['wf_type']][$package_name]['script'] =
-                        $this->getScriptPath($workflow, $script);
+                        $this->getScriptPath($workflow, $script, $package, $composer, $event->getIO());
                     $wf_info[$workflow['wf_type']][$package_name]['package_name'] = $package_name;
                 }
             }
