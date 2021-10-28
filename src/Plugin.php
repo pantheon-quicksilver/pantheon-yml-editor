@@ -135,11 +135,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
                     $root_extras = $this->composer->getPackage()->getExtra();
                     if (!empty($root_extras['pantheon-quicksilver']['quicksilver-denylist'][$hook['package_name']])) {
-                        $deny_list = $root_extras['pantheon-quicksilver']['quicksilver-denylist'][$hook['package_name']];
+                        $deny_list =
+                            $root_extras['pantheon-quicksilver']['quicksilver-denylist'][$hook['package_name']];
                         $skip_hook = false;
                         foreach ($deny_list as $deny_item) {
                             if (!empty($deny_item['wf_type']) && !empty($deny_item['stage'])) {
-                                if ($deny_item['wf_type'] === $hook['wf_type'] && $deny_item['stage'] === $hook['stage']) {
+                                if ($deny_item['wf_type'] === $hook['wf_type'] &&
+                                    $deny_item['stage'] === $hook['stage']) {
                                     $skip_hook = true;
                                     break;
                                 }
@@ -148,7 +150,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                         if ($skip_hook) {
                             $package_name = $hook['package_name'];
                             $workflow_type = $hook['wf_type'];
-                            $event->getIO()->notice("Skipping hook found in deny list: ${package_name} (${workflow_type}/${stage_name})");
+                            $event->getIO()->notice(
+                                "Skipping hook found in deny list: ${package_name} (${workflow_type}/${stage_name})"
+                            );
                             continue;
                         }
                     }
