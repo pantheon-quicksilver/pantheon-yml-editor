@@ -21,11 +21,11 @@ class Util
     /**
      * Get script path from workflow information.
      *
-     * @param $workflow
-     * @param $script_name
-     * @param $package
-     * @param $composer
-     * @param $io
+     * @param  $workflow
+     * @param  $script_name
+     * @param  $package
+     * @param  $composer
+     * @param  $io
      * @return string
      */
     public function getScriptPath($workflow, $script_name, $package, $composer, $io): string
@@ -46,12 +46,15 @@ class Util
 
     /**
      * Get hook possible descriptions.
+     *
+     * @param  $hook
+     * @return array
      */
     public function getHookDescriptions($hook): array
     {
         $package_name = $hook['package_name'];
         $wf_type = $hook['wf_type'];
-        $base_description = "[${package_name}] ${wf_type}";
+        $base_description = "[$package_name] $wf_type";
         return [
             $base_description . ' (default)',
             $base_description . ' (edited)',
@@ -59,17 +62,58 @@ class Util
     }
 
     /**
-     * Find given workflow from pantheon yml in the workflows array.
+     * Get hook description.
+     *
+     * @param  $hook
+     * @return array
+     */
+    public function getHookDescription($hook): array
+    {
+        $package_name = $hook['package_name'];
+        $package_description = $hook['package_description'];
+
+        return [
+            'description' => "[$package_name] $package_description",
+            'package' => "[$package_name]",
+        ];
+    }
+
+    /**
+     * Find matching descriptions.
+     *
+     * @param  $haystack
+     * @param  $needle
+     * @return bool
+     */
+    public function matchDescription($haystack, $needle): bool
+    {
+        $match = false;
+        if (strpos($haystack, $needle) !== -1) {
+            $match = true;
+        }
+
+        return $match;
+    }
+
+    /**
+     * Find given workflow from pantheon.yml in the workflows array.
+     *
+     * @param  $pantheon_yml_entry
+     * @param  $workflows
+     * @param  null $stage
+     * @return mixed|null
      */
     public function findWorkflowFromPantheonYml($pantheon_yml_entry, $workflows, $stage = null)
     {
         $found_workflow = null;
         foreach ($workflows as $workflow) {
+            // Validate the correct hook based on stage declaration
             if ($stage && $workflow['stage'] !== $stage) {
                 continue;
             }
-            $descriptions = $this->getHookDescriptions($workflow);
-            if (in_array($pantheon_yml_entry['description'], $descriptions)) {
+            // Get description.
+            $descriptions = $this->getHookDescription($workflow);
+            if ($this->matchDescription($pantheon_yml_entry['description'], $descriptions['package'])) {
                 $found_workflow = $workflow;
                 break;
             }
@@ -80,8 +124,8 @@ class Util
     /**
      * Validate that workflow structure complies with pantheon-yml-editor.
      *
-     * @param array $workflow
-     * @param $event
+     * @param  array $workflow
+     * @param  $event
      * @return bool
      */
     public function isValidWorkflow(array $workflow, $event): bool
@@ -115,9 +159,9 @@ class Util
     /**
      * Build workflows array from composer packages.
      *
-     * @param $packages
-     * @param $event
-     * @param $composer
+     * @param  $packages
+     * @param  $event
+     * @param  $composer
      * @return array
      */
     public function buildWorkflowsInfoArray($packages, $event, $composer): array
@@ -129,6 +173,7 @@ class Util
             }
 
             $package_name = $package->getName();
+            $package_description = $package->getDescription();
             $extra = $package->getExtra();
 
             // Check if Pantheon Quicksilver extras exist.
@@ -152,7 +197,9 @@ class Util
                     // Handle optional script key.
                     $wf_info[$workflow['wf_type']][$package_name]['script'] =
                         $this->getScriptPath($workflow, $script, $package, $composer, $event->getIO());
+
                     $wf_info[$workflow['wf_type']][$package_name]['package_name'] = $package_name;
+                    $wf_info[$workflow['wf_type']][$package_name]['package_description'] = $package_description;
                 }
             }
         }
@@ -163,7 +210,7 @@ class Util
     /**
      * Fix floats to print them as strings.
      *
-     * @param $data
+     * @param  $data
      * @return mixed
      */
     protected function fixFloats($data)
@@ -209,7 +256,7 @@ class Util
     /**
      * Write a modified pantheon.yml file back to disk.
      *
-     * @param $pantheon_yml
+     * @param  $pantheon_yml
      * @return false|int
      */
     public function writePantheonYml($pantheon_yml)
