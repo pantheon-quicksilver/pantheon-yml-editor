@@ -81,7 +81,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function updatePantheonYml(Event $event)
     {
-        var_dump(getenv('PANTHEON_ENVIRONMENT'));
+        var_dump($_SERVER);
         // This should not run in Pantheon Integrated composer.
         if (getenv('PANTHEON_ENVIRONMENT')) {
             return;
