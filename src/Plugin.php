@@ -97,14 +97,16 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
         // Sort each wf_type.
         foreach ($wf_info as &$wf_type) {
-            usort($wf_type, function ($wf_a, $wf_b) {
-                $weight_a = !empty($wf_a['weight']) ? $wf_a['weight'] : 0;
-                $weight_b = !empty($wf_b['weight']) ? $wf_b['weight'] : 0;
-                if ($weight_a === $weight_b) {
-                    return 0;
+            usort(
+                $wf_type, function ($wf_a, $wf_b) {
+                    $weight_a = !empty($wf_a['weight']) ? $wf_a['weight'] : 0;
+                    $weight_b = !empty($wf_b['weight']) ? $wf_b['weight'] : 0;
+                    if ($weight_a === $weight_b) {
+                        return 0;
+                    }
+                    return ($weight_a > $weight_b) ? 1 : -1;
                 }
-                return ($weight_a > $weight_b) ? 1 : -1;
-            });
+            );
         }
 
         $pantheon_yml = $this->util->getPantheonYmlContents();
@@ -150,33 +152,37 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             foreach ($may_need_order_fix as $hook_name => $hook) {
                 foreach ($hook as $stage_name) {
                     $pantheon_yml_stage = &$pantheon_yml['workflows'][$hook_name][$stage_name];
-                    usort($pantheon_yml_stage, function ($entry_a, $entry_b) use ($wf_info, $hook_name, $stage_name) {
-                        $weight_a = 0;
-                        $weight_b = 0;
-                        // Try get the weights from the source and reorder as needed.
-                        if ($wf_a = $this->util->findWorkflowFromPantheonYml(
-                            $entry_a,
-                            $wf_info[$hook_name],
-                            $stage_name
-                        )) {
-                            if (!empty($wf_a['weight'])) {
-                                $weight_a = $wf_a['weight'];
+                    usort(
+                        $pantheon_yml_stage, function ($entry_a, $entry_b) use ($wf_info, $hook_name, $stage_name) {
+                            $weight_a = 0;
+                            $weight_b = 0;
+                            // Try get the weights from the source and reorder as needed.
+                            if ($wf_a = $this->util->findWorkflowFromPantheonYml(
+                                $entry_a,
+                                $wf_info[$hook_name],
+                                $stage_name
+                            )
+                            ) {
+                                if (!empty($wf_a['weight'])) {
+                                    $weight_a = $wf_a['weight'];
+                                }
                             }
-                        }
-                        if ($wf_b = $this->util->findWorkflowFromPantheonYml(
-                            $entry_b,
-                            $wf_info[$hook_name],
-                            $stage_name
-                        )) {
-                            if (!empty($wf_b['weight'])) {
-                                $weight_b = $wf_b['weight'];
+                            if ($wf_b = $this->util->findWorkflowFromPantheonYml(
+                                $entry_b,
+                                $wf_info[$hook_name],
+                                $stage_name
+                            )
+                            ) {
+                                if (!empty($wf_b['weight'])) {
+                                    $weight_b = $wf_b['weight'];
+                                }
                             }
+                            if ($weight_a === $weight_b) {
+                                return 0;
+                            }
+                            return ($weight_a > $weight_b) ? 1 : -1;
                         }
-                        if ($weight_a === $weight_b) {
-                            return 0;
-                        }
-                        return ($weight_a > $weight_b) ? 1 : -1;
-                    });
+                    );
                 }
             }
         }

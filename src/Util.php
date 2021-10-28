@@ -21,11 +21,11 @@ class Util
     /**
      * Get script path from workflow information.
      *
-     * @param $workflow
-     * @param $script_name
-     * @param $package
-     * @param $composer
-     * @param $io
+     * @param  $workflow
+     * @param  $script_name
+     * @param  $package
+     * @param  $composer
+     * @param  $io
      * @return string
      */
     public function getScriptPath($workflow, $script_name, $package, $composer, $io): string
@@ -47,7 +47,7 @@ class Util
     /**
      * Get hook possible descriptions.
      *
-     * @param $hook
+     * @param  $hook
      * @return array
      */
     public function getHookDescriptions($hook): array
@@ -64,7 +64,7 @@ class Util
     /**
      * Get hook description.
      *
-     * @param $hook
+     * @param  $hook
      * @return array
      */
     public function getHookDescription($hook): array
@@ -80,8 +80,9 @@ class Util
 
     /**
      * Find matching descriptions.
-     * @param $haystack
-     * @param $needle
+     *
+     * @param  $haystack
+     * @param  $needle
      * @return bool
      */
     public function matchDescription($haystack, $needle): bool
@@ -97,9 +98,9 @@ class Util
     /**
      * Find given workflow from pantheon.yml in the workflows array.
      *
-     * @param $pantheon_yml_entry
-     * @param $workflows
-     * @param null $stage
+     * @param  $pantheon_yml_entry
+     * @param  $workflows
+     * @param  null $stage
      * @return mixed|null
      */
     public function findWorkflowFromPantheonYml($pantheon_yml_entry, $workflows, $stage = null)
@@ -123,8 +124,8 @@ class Util
     /**
      * Validate that workflow structure complies with pantheon-yml-editor.
      *
-     * @param array $workflow
-     * @param $event
+     * @param  array $workflow
+     * @param  $event
      * @return bool
      */
     public function isValidWorkflow(array $workflow, $event): bool
@@ -158,9 +159,9 @@ class Util
     /**
      * Build workflows array from composer packages.
      *
-     * @param $packages
-     * @param $event
-     * @param $composer
+     * @param  $packages
+     * @param  $event
+     * @param  $composer
      * @return array
      */
     public function buildWorkflowsInfoArray($packages, $event, $composer): array
@@ -209,7 +210,7 @@ class Util
     /**
      * Fix floats to print them as strings.
      *
-     * @param $data
+     * @param  $data
      * @return mixed
      */
     protected function fixFloats($data)
@@ -255,7 +256,7 @@ class Util
     /**
      * Write a modified pantheon.yml file back to disk.
      *
-     * @param $pantheon_yml
+     * @param  $pantheon_yml
      * @return false|int
      */
     public function writePantheonYml($pantheon_yml)

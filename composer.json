@@ -20,7 +20,8 @@
     "class": "PantheonYmlEditor\\Plugin"
   },
   "scripts": {
-    "cs": "phpcs --standard=PSR2 src"
+    "cs": "phpcs --standard=PSR2 src",
+    "fix": "phpcbf  src"
   },
   "authors": [
     {
