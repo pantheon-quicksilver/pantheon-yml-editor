@@ -43,6 +43,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function removeWorkflows(Event $event)
     {
+        // This should not run in Pantheon Integrated composer.
+        if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
+            return;
+        }
         $package = $event->getOperation()->getPackage();
         if (!in_array($package->getType(), ['quicksilver-script', 'quicksilver-module'])) {
             return;
@@ -76,6 +80,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function updatePantheonYml(Event $event)
     {
+        // This should not run in Pantheon Integrated composer.
+        if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
+            return;
+        }
         $repositoryManager = $this->composer->getRepositoryManager();
         $localRepository = $repositoryManager->getLocalRepository();
         $packages = $localRepository->getPackages();
