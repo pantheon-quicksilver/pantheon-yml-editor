@@ -16,10 +16,10 @@ workflows:
       -
         type: webphp
         script: private/scripts/quicksilver/wakeup/wakeup.php
-        description: '[pantheon-quicksilver/wakeup] clone_database (default)'
+        description: '[pantheon-quicksilver/wakeup] A simple script to wake up a sleeping site environment.'
   create_cloud_development_environment:
     after:
       -
         type: webphp
         script: private/scripts/quicksilver/wakeup/wakeup.php
-        description: '[pantheon-quicksilver/wakeup] create_cloud_development_environment (default)'
+        description: '[pantheon-quicksilver/wakeup] A simple script to wake up a sleeping site environment.'
