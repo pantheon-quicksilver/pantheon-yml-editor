@@ -21,7 +21,7 @@
   },
   "scripts": {
     "cs": "phpcs --standard=PSR2 src",
-    "fix": "phpcbf  src"
+    "fix": "phpcbf --standard=PSR2 src"
   },
   "authors": [
     {

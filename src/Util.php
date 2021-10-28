@@ -88,7 +88,7 @@ class Util
     public function matchDescription($haystack, $needle): bool
     {
         $match = false;
-        if (strpos($haystack, $needle) !== -1 ) {
+        if (strpos($haystack, $needle) !== -1) {
             $match = true;
         }
 

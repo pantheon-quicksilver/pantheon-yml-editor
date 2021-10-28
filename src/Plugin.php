@@ -65,7 +65,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     if (isset($pantheon_yml['workflows'][$hook_name])) {
                         foreach ($pantheon_yml['workflows'][$hook_name] as $stage_name => $stage) {
                             foreach ($stage as $key => $item) {
-                                if ($this->util->matchDescription($item['description'], $hook_descriptions['package'])) {
+                                $id = item['description'];
+                                if ($this->util->matchDescription($id, $hook_descriptions['package'])) {
                                     unset($pantheon_yml['workflows'][$hook_name][$stage_name][$key]);
                                 }
                             }
@@ -98,7 +99,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         // Sort each wf_type.
         foreach ($wf_info as &$wf_type) {
             usort(
-                $wf_type, function ($wf_a, $wf_b) {
+                $wf_type,
+                function ($wf_a, $wf_b) {
                     $weight_a = !empty($wf_a['weight']) ? $wf_a['weight'] : 0;
                     $weight_b = !empty($wf_b['weight']) ? $wf_b['weight'] : 0;
                     if ($weight_a === $weight_b) {
@@ -114,7 +116,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         // Which hooks and stages may need ordering fix.
         $may_need_order_fix = [];
         foreach ($wf_info as $hook_name => $hook_contents) {
-
             foreach ($hook_contents as $hook) {
                 $hook_descriptions = $this->util->getHookDescription($hook);
                 $found = false;
@@ -141,7 +142,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     }
                     $may_need_order_fix[$hook_name][$hook['stage']] = $hook['stage'];
                     $pantheon_yml['workflows'][$hook_name][$hook['stage']][] = [
-                        'type' => (!empty($hook['type'])) ? $hook['type'] : 'webphp', // Only adding this for the future if we support other types.
+                        // Only adding this for the future if we support other script types.
+                        'type' => (!empty($hook['type'])) ? $hook['type'] : 'webphp',
                         'script' => $hook['script'],
                         'description' => $hook_descriptions['description'],
                     ];
@@ -153,7 +155,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 foreach ($hook as $stage_name) {
                     $pantheon_yml_stage = &$pantheon_yml['workflows'][$hook_name][$stage_name];
                     usort(
-                        $pantheon_yml_stage, function ($entry_a, $entry_b) use ($wf_info, $hook_name, $stage_name) {
+                        $pantheon_yml_stage,
+                        function ($entry_a, $entry_b) use ($wf_info, $hook_name, $stage_name) {
                             $weight_a = 0;
                             $weight_b = 0;
                             // Try get the weights from the source and reorder as needed.
