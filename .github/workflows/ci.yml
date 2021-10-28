@@ -1,7 +1,6 @@
 name: Pantheon YML Editor
 on:
   push:
-  pull_request:
 jobs:
   build_test:
     name: Build and test
@@ -17,8 +16,16 @@ jobs:
             phpunit-versions: '8.5.21'
 
     steps:
-      - name: Checkout
+      - name: Checkout drupal-project to run tests
         uses: actions/checkout@v2
+        with:
+          repository: pantheon-upstreams/drupal-project
+          path: drupal-project
+
+      - name: Checkout current repo
+        uses: actions/checkout@v2
+        with:
+          path: drupal-project/pantheon-yml-editor
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -29,9 +36,12 @@ jobs:
 
       - name: Composer install
         run: composer install
+        working-directory: drupal-project/pantheon-yml-editor
 
       - name: Code sniff
         run: composer cs
+        working-directory: drupal-project/pantheon-yml-editor
 
       - name: Run tests
         run: ./tests/run.sh
+        working-directory: drupal-project/pantheon-yml-editor

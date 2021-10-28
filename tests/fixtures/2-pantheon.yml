@@ -1,0 +1,14 @@
+# Put overrides to your pantheon.upstream.yml file here.
+# For more information, see: https://pantheon.io/docs/pantheon-yml/
+api_version: 1
+
+# Quicksilver Platform Integration Hooks
+# https://pantheon.io/docs/pantheon-yml#quicksilver
+workflows:
+  sync_code: {  }
+  clone_database:
+    after: {  }
+  deploy: {  }
+  clear_cache: {  }
+  create_cloud_development_environment:
+    after: {  }
