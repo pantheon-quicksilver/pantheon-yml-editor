@@ -51,4 +51,23 @@ workflows:
 
 If you want to make any change to the workflow and avoid composer to reverting your changes, change "default" (in parenthesis) to "edited" (the rest of the description should remain the same).
 
-**Note**: Removing a workflow added with this plugin will result in the next composer run re-adding it. This will be fixed in a future version.
+## Removing workflows added by this plugin
+
+If you want to remove a workflow added by this plugin and not getting it re-added in the next composer.json you should add it to the composer.json deny list like this:
+
+```
+"extra": {
+    "pantheon-quicksilver": {
+        "quicksilver-denylist": {
+            "pantheon-quicksilver/wakeup": [
+                {
+                    "wf_type": "clone_database",
+                    "stage": "after"
+                }
+            ]
+        }
+    }
+}
+```
+
+The above lines will avoid the clone_database workflows (in after stage) for pantheon-quicksilver/wakeup to be re-added to your pantheon.yml file.
