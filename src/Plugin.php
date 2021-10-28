@@ -47,21 +47,25 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if (isset($_ENV['PANTHEON_RUNTIME'])) {
             return;
         }
+
+        // Script if not a Quicksilver compatible script.
         $package = $event->getOperation()->getPackage();
         if (!in_array($package->getType(), ['quicksilver-script', 'quicksilver-module'])) {
             return;
         }
+
+        // Get workflow info.
         $wf_info = $this->util->buildWorkflowsInfoArray([$package], $event, $this->composer);
         if ($wf_info) {
             $pantheon_yml = $this->util->getPantheonYmlContents();
 
             foreach ($wf_info as $hook_name => $hook_contents) {
                 foreach ($hook_contents as $hook) {
-                    $hook_descriptions = $this->util->getHookDescriptions($hook);
+                    $hook_descriptions = $this->util->getHookDescription($hook);
                     if (isset($pantheon_yml['workflows'][$hook_name])) {
                         foreach ($pantheon_yml['workflows'][$hook_name] as $stage_name => $stage) {
                             foreach ($stage as $key => $item) {
-                                if ($item['description'] === $hook_descriptions[0]) {
+                                if ($this->util->matchDescription($item['description'], $hook_descriptions['package'])) {
                                     unset($pantheon_yml['workflows'][$hook_name][$stage_name][$key]);
                                 }
                             }
@@ -87,6 +91,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $repositoryManager = $this->composer->getRepositoryManager();
         $localRepository = $repositoryManager->getLocalRepository();
         $packages = $localRepository->getPackages();
+
         // Quicksilver workflows as per https://pantheon.io/docs/quicksilver#hooks.
         $wf_info = $this->util->buildWorkflowsInfoArray($packages, $event, $this->composer);
 
@@ -107,35 +112,36 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         // Which hooks and stages may need ordering fix.
         $may_need_order_fix = [];
         foreach ($wf_info as $hook_name => $hook_contents) {
+
             foreach ($hook_contents as $hook) {
-                $hook_descriptions = $this->util->getHookDescriptions($hook);
+                $hook_descriptions = $this->util->getHookDescription($hook);
                 $found = false;
                 if (isset($pantheon_yml['workflows'][$hook_name])) {
                     foreach ($pantheon_yml['workflows'][$hook_name] as $stage_name => &$stage) {
                         foreach ($stage as &$item) {
-                            if ($item['description'] === $hook_descriptions[0]) {
+                            // Check if description already exists.
+                            if ($this->util->matchDescription($item['description'], $hook_descriptions['package'])) {
                                 if (!isset($may_need_order_fix[$hook_name])) {
                                     $may_need_order_fix[$hook_name] = [];
                                 }
                                 $may_need_order_fix[$hook_name][$stage_name] = $stage_name;
                                 $found = true;
                                 $item['script'] = $hook['script'];
-                            } elseif ($item['description'] === $hook_descriptions[1]) {
-                                // Nothing to do.
-                                $found = true;
                             }
                         }
                     }
                 }
+
+                // Hook is not found, place hook in correct state.
                 if (!$found) {
                     if (!isset($may_need_order_fix[$hook_name])) {
                         $may_need_order_fix[$hook_name] = [];
                     }
                     $may_need_order_fix[$hook_name][$hook['stage']] = $hook['stage'];
                     $pantheon_yml['workflows'][$hook_name][$hook['stage']][] = [
-                        'type' => 'webphp',
+                        'type' => (!empty($hook['type'])) ? $hook['type'] : 'webphp', // Only adding this for the future if we support other types.
                         'script' => $hook['script'],
-                        'description' => $hook_descriptions[0],
+                        'description' => $hook_descriptions['description'],
                     ];
                 }
             }
