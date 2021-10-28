@@ -43,8 +43,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function removeWorkflows(Event $event)
     {
+        var_dump(getenv('PANTHEON_ENVIRONMENT'));
         // This should not run in Pantheon Integrated composer.
-        if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
+        if (getenv('PANTHEON_ENVIRONMENT')) {
             return;
         }
         $package = $event->getOperation()->getPackage();
@@ -80,10 +81,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function updatePantheonYml(Event $event)
     {
-        var_dump($_ENV['PANTHEON_ENVIRONMENT']);
         var_dump(getenv('PANTHEON_ENVIRONMENT'));
         // This should not run in Pantheon Integrated composer.
-        if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
+        if (getenv('PANTHEON_ENVIRONMENT')) {
             return;
         }
         $repositoryManager = $this->composer->getRepositoryManager();
