@@ -65,7 +65,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                     if (isset($pantheon_yml['workflows'][$hook_name])) {
                         foreach ($pantheon_yml['workflows'][$hook_name] as $stage_name => $stage) {
                             foreach ($stage as $key => $item) {
-                                $id = item['description'];
+                                $id = $item['description'];
                                 if ($this->util->matchDescription($id, $hook_descriptions['package'])) {
                                     unset($pantheon_yml['workflows'][$hook_name][$stage_name][$key]);
                                 }
