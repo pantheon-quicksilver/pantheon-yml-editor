@@ -12,11 +12,11 @@ composer require pantheon-quicksilver/pantheon-yml-editor:"dev-${BRANCH_NAME} as
 
 # Require wakeup script.
 composer require pantheon-quicksilver/wakeup
-echo "Compare current pantheon.yml with the fixture"
+echo "Compare current pantheon.yml with the fixture after requiring package"
 diff -q pantheon.yml pantheon-yml-editor/tests/fixtures/1-pantheon.yml
 
 composer remove pantheon-quicksilver/wakeup
-echo "Compare current pantheon.yml with the fixture"
+echo "Compare current pantheon.yml with the fixture after removing package"
 diff -q pantheon.yml pantheon-yml-editor/tests/fixtures/2-pantheon.yml
 
 echo "Start with pantheon.yml with some contents and then require wakeup again"
