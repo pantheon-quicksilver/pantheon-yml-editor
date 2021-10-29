@@ -4,7 +4,6 @@ namespace PantheonYmlEditor;
 
 use Symfony\Component\Yaml\Yaml;
 use Consolidation\Comments\Comments;
-use Composer\InstalledVersions;
 use Composer\Installers\PantheonInstaller;
 
 /**
@@ -30,7 +29,7 @@ class Util
      */
     public function getScriptPath($workflow, $script_name, $package, $composer, $io): string
     {
-        $package_name = $package->getName();
+
         $installer = new PantheonInstaller($package, $composer, $io);
         $script_path = $installer->getInstallPath($package, 'pantheon-quicksilver');
         if (strpos($script_path, 'web/') === 0) {
@@ -42,23 +41,6 @@ class Util
             $script_path .= "${script_name}.php";
         }
         return $script_path;
-    }
-
-    /**
-     * Get hook possible descriptions.
-     *
-     * @param  $hook
-     * @return array
-     */
-    public function getHookDescriptions($hook): array
-    {
-        $package_name = $hook['package_name'];
-        $wf_type = $hook['wf_type'];
-        $base_description = "[$package_name] $wf_type";
-        return [
-            $base_description . ' (default)',
-            $base_description . ' (edited)',
-        ];
     }
 
     /**
